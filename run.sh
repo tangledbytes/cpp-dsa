@@ -53,7 +53,7 @@ fi
 
 # Check if valgrind exists
 if command -v valgrind >/dev/null 2>&1; then
-    valgrind ./$out_file
+    valgrind --leak-check=full ./$out_file
 else
     echo "[CPP RUNNER]: Failed to find valgrind... skipping memory checks"
     ./$out_file
