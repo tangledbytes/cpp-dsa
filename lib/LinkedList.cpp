@@ -1,18 +1,11 @@
 #include "LinkedList.h"
 
-LinkedList::LinkedList() {
-  head = nullptr;
-}
+LinkedList::LinkedList() { head = nullptr; }
 
-Node* LinkedList::getHead() {
-  return head;
-}
+Node* LinkedList::getHead() { return head; }
 
 bool LinkedList::isEmpty() {
-  if (head == nullptr)  // Check whether the head points to null
-    return true;
-  else
-    return false;
+  return head == nullptr;  // Check whether the head points to null
 }
 
 bool LinkedList::printList() {
