@@ -26,6 +26,10 @@ no_mem=0
 in_file="main.cpp"
 # ===================================================================================
 
+echo ""
+echo "=================== [CPP RUNNER] ========================"
+echo ""
+
 # Setup
 check_argument "$@"
 
@@ -54,3 +58,6 @@ else
     echo "[CPP RUNNER]: Failed to find valgrind... skipping memory checks"
     ./$out_file
 fi
+
+echo ""
+echo "[CPP RUNNER]: EXITTED WITH CODE $?"

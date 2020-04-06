@@ -14,8 +14,5 @@ fi
 # Build the image
 docker build -t "$tag" .
 
-echo "\n=================== [CPP RUNNER] ======================== \n"
 # Run the image
 docker run "$tag" ./$run_script "$@"
-
-echo "\n[CPP RUNNER]: EXITTED WITH CODE $?"
