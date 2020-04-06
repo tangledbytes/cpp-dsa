@@ -18,6 +18,13 @@ check_argument()
 }
 
 # ===================================================================================
+close()
+{
+    echo "[CPP RUNNER]: EXITTED WITH CODE $1"
+    exit $1
+}
+
+# ===================================================================================
 # Default output filename
 out_file="a.out"
 # Default memory check
@@ -40,7 +47,7 @@ echo "[CPP RUNNER]: Compiling $in_file..."
 g++ -Wall -pedantic -std=c++17 -o "$out_file" $in_file
 
 # Exit if above process didn't suceeded properly
-if [ $? -ne 0 ]; then exit 1; fi
+if [ $? -ne 0 ]; then close 1; fi
 
 # Log running process
 echo "[CPP RUNNER]: Running $in_file..."
@@ -48,7 +55,7 @@ echo "[CPP RUNNER]: Running $in_file..."
 if [ $no_mem -eq 1 ]; then
     echo "[CPP RUNNER]: Opted no memory leak checks"
     ./$out_file
-    exit 0
+    close 0
 fi
 
 # Check if valgrind exists
@@ -60,4 +67,4 @@ else
 fi
 
 echo ""
-echo "[CPP RUNNER]: EXITTED WITH CODE $?"
+close 0
