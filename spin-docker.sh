@@ -14,5 +14,10 @@ fi
 # Build the image
 docker build -t "$tag" .
 
+if [ $? -ne 0 ]; then
+    echo "Error building the image"
+    exit 1
+fi
+
 # Run the image
 docker run "$tag" ./$run_script "$@"
