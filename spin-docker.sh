@@ -20,4 +20,4 @@ if [ $? -ne 0 ]; then
 fi
 
 # Run the image
-docker run "$tag" ./$run_script "$@"
+docker run --cpus="1" --memory="512m" "$tag" ./$run_script "$@"
