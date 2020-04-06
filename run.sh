@@ -11,6 +11,8 @@ check_argument()
             ;;
             -o=*) out_file=$VALUE
             ;;
+            *) in_file=$i
+            ;;
         esac
     done
 }
@@ -20,22 +22,24 @@ check_argument()
 out_file="a.out"
 # Default memory check
 no_mem=0
+# Default file name
+in_file="main.cpp"
 # ===================================================================================
 
 # Setup
 check_argument "$@"
 
 # Log compile process
-echo "[CPP RUNNER]: Compiling $1..."
+echo "[CPP RUNNER]: Compiling $in_file..."
 
 # Compile the file
-g++ -Wall -pedantic -std=c++17 -o "$out_file" $1
+g++ -Wall -pedantic -std=c++17 -o "$out_file" $in_file
 
 # Exit if above process didn't suceeded properly
 if [ $? -ne 0 ]; then exit 1; fi
 
 # Log running process
-echo "[CPP RUNNER]: Running $1..."
+echo "[CPP RUNNER]: Running $in_file..."
 
 if [ $no_mem -eq 1 ]; then
     echo "[CPP RUNNER]: Opted no memory leak checks"
