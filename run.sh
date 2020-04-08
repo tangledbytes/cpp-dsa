@@ -41,38 +41,49 @@ no_mem=0
 in_file="main.cpp"
 # ===================================================================================
 
-echo ""
-echo "=================== [CPP RUNNER] ========================"
-echo ""
+cpp_runner()
+{
+    # Setup
+    check_argument "$@"
+    
+    # Log compile process
+    log "Compiling $in_file..."
+    
+    # Compile the file
+    g++ -Wall -pedantic -std=c++17 -o "$out_file" $in_file
+    
+    # Exit if above process didn't suceeded properly
+    if [ $? -ne 0 ]; then close 1; fi
+    
+    # Log running process
+    log "Running $in_file..."
+    
+    if [ $no_mem -eq 1 ]; then
+        log "Opted no memory leak checks"
+        ./$out_file
+        close 0
+    fi
+    
+    # Check if valgrind exists
+    if command -v valgrind >/dev/null 2>&1; then
+        valgrind --leak-check=full ./$out_file
+    else
+        log "Failed to find valgrind... skipping memory checks"
+        ./$out_file
+    fi
+}
 
-# Setup
-check_argument "$@"
-
-# Log compile process
-log "Compiling $in_file..."
-
-# Compile the file
-g++ -Wall -pedantic -std=c++17 -o "$out_file" $in_file
-
-# Exit if above process didn't suceeded properly
-if [ $? -ne 0 ]; then close 1; fi
-
-# Log running process
-log "Running $in_file..."
-
-if [ $no_mem -eq 1 ]; then
-    log "Opted no memory leak checks"
-    ./$out_file
-    close 0
-fi
-
-# Check if valgrind exists
-if command -v valgrind >/dev/null 2>&1; then
-    valgrind --leak-check=full ./$out_file
+if command -v inotifywait >/dev/null 2>&1; then
+    echo ""
+    echo "=================== [CPP RUNNER] ========================"
+    echo ""
+    
+    log "Monitoring changes"
+    while inotifywait -q -r -e modify $in_file >/dev/null 2>&1; do
+        cpp_runner "$@"
+        log "Waiting for changes"
+    done
 else
-    log "Failed to find valgrind... skipping memory checks"
-    ./$out_file
+    log "inotify not found"
+    close 1
 fi
-
-echo ""
-close 0
