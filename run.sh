@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# ================= LOG FUNCTION ====================================================
+log ()
+{
+    echo "[CPP RUNNER]: $@"
+}
+
 # ================ Check if required argument was passed or not =====================
 check_argument()
 {
@@ -11,6 +17,8 @@ check_argument()
             ;;
             -o=*) out_file=$VALUE
             ;;
+            --*) log "Invalid flag!"; close 1
+            ;;
             *) in_file=$i
             ;;
         esac
@@ -20,7 +28,7 @@ check_argument()
 # ===================================================================================
 close()
 {
-    echo "[CPP RUNNER]: EXITTED WITH CODE $1"
+    log "EXITTED WITH CODE $1"
     exit $1
 }
 
@@ -41,7 +49,7 @@ echo ""
 check_argument "$@"
 
 # Log compile process
-echo "[CPP RUNNER]: Compiling $in_file..."
+log "Compiling $in_file..."
 
 # Compile the file
 g++ -Wall -pedantic -std=c++17 -o "$out_file" $in_file
@@ -50,10 +58,10 @@ g++ -Wall -pedantic -std=c++17 -o "$out_file" $in_file
 if [ $? -ne 0 ]; then close 1; fi
 
 # Log running process
-echo "[CPP RUNNER]: Running $in_file..."
+log "Running $in_file..."
 
 if [ $no_mem -eq 1 ]; then
-    echo "[CPP RUNNER]: Opted no memory leak checks"
+    log "Opted no memory leak checks"
     ./$out_file
     close 0
 fi
@@ -62,7 +70,7 @@ fi
 if command -v valgrind >/dev/null 2>&1; then
     valgrind --leak-check=full ./$out_file
 else
-    echo "[CPP RUNNER]: Failed to find valgrind... skipping memory checks"
+    log "Failed to find valgrind... skipping memory checks"
     ./$out_file
 fi
 
