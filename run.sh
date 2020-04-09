@@ -1,10 +1,32 @@
 #!/bin/bash
 
 # ===================================== FUNCTIONS ===========================================
+
+# Import coloring script
+. bash-colors.sh
+
 # Logs the argument
 log ()
 {
-    echo "[CPP RUNNER]: $@"
+    echo -e "$(c 0gB)[CPP RUNNER]:$(c) $(c 0gL)$@$(c)"
+}
+
+# Log warning
+warn()
+{
+    echo -e "$(c 0yB)[CPP RUNNER]:$(c) $(c 0yL)$@$(c)"
+}
+
+# Log error
+error()
+{
+    echo -e "$(c 0rB)[CPP RUNNER]:$(c) $(c 0rL)$@$(c)"
+}
+
+# Banner
+banner()
+{
+    echo -e "$(c gB)$@$(c)"
 }
 
 # Parses the arguments passed
@@ -31,7 +53,9 @@ check_argument()
 # Closes with a certain exit code
 close()
 {
-    if [ $# -eq 0 ]; then log "EXITTING...";
+    if [ $# -eq 0 ]; then
+        log "EXITTING..."
+        exit 0;
     else
         log "EXITTED WITH CODE $1"
         exit $1
@@ -57,18 +81,16 @@ cpp_runner()
     log "Running $in_file..."
     
     if [ $no_mem -eq 1 ]; then
-        log "Opted no memory leak checks"
+        warn "Opted no memory leak checks"
         ./$out_file
-        close 0
-    fi
-    
-    # Check if valgrind exists
-    if command -v valgrind >/dev/null 2>&1; then
-        valgrind --leak-check=full ./$out_file
     else
-        log "Failed to find valgrind... skipping memory checks"
-        ./$out_file
-        close 0
+        # Check if valgrind exists
+        if command -v valgrind >/dev/null 2>&1; then
+            valgrind --leak-check=full ./$out_file
+        else
+            warn "Failed to find valgrind... skipping memory checks"
+            ./$out_file
+        fi
     fi
 }
 
@@ -86,16 +108,13 @@ in_file="main.cpp"
 watch=$in_file
 # ===================================================================================
 
-# Exit message
-trap close EXIT
-
 # Parse arguments
 check_argument "$@"
 
 # Check if inotify exists on the system/container
 if command -v inotifywait >/dev/null 2>&1; then
     echo ""
-    echo "=================== [CPP RUNNER] ========================"
+    banner "=================== [CPP RUNNER] ========================"
     echo ""
     
     log "Monitoring changes..."
@@ -105,7 +124,7 @@ if command -v inotifywait >/dev/null 2>&1; then
         log "Waiting for changes..."
     done
 else
-    log "inotify not found"
-    log "Proceeding without monitoring"
+    warn "inotify not found"
+    warn "Proceeding without monitoring"
     cpp_runner "$@"
 fi
