@@ -16,7 +16,8 @@ class LinkedList {
   void insert(T data);
   T remove(T key);
   bool exists(T key);
-  Node<T> *head() { return Head; }
+  void forEach(void (*func)(T &data));
+  void forEach(void (*func)(T data));
 
   ~LinkedList() {
     while (Head) {
@@ -27,6 +28,30 @@ class LinkedList {
     }
   }
 };
+
+/**
+ * Iterates over each element of the queue
+ * */
+template <class T>
+void LinkedList<T>::forEach(void (*func)(T &data)) {
+  Node<T> *temp = Head;
+  while (temp) {
+    func(temp->data);
+    temp = temp->next;
+  }
+}
+
+/**
+ * Iterates over each element of the queue
+ * */
+template <class T>
+void LinkedList<T>::forEach(void (*func)(T data)) {
+  Node<T> *temp = Head;
+  while (temp) {
+    func(temp->data);
+    temp = temp->next;
+  }
+}
 
 template <typename T>
 void LinkedList<T>::insert(T data) {
@@ -42,7 +67,7 @@ void LinkedList<T>::insert(T data) {
 template <typename T>
 T LinkedList<T>::remove(T key) {
   Node<T> *temp = Head, *tail = nullptr;
-  T data = -1;
+  T data = T();
 
   while (temp && temp->data != key) {
     tail = temp;
@@ -52,6 +77,7 @@ T LinkedList<T>::remove(T key) {
   if (temp) {
     if (tail) tail->next = temp->next;
     data = temp->data;
+    if (temp == Head) Head = temp->next;
     delete temp;
     --length;
   }
