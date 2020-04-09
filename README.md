@@ -1,8 +1,8 @@
 # CPP DSA (Data structures and algorithms)
 
-The repository contains a very implementation of basic data structures and algorithms.
+The repository contains implementations of very basic data structures and algorithms.
 
-This repository also contains several bash script which can be used if the user has docker installed. The advantage to use the script that
+This repository also contains several bash script which can be used if the user has docker installed. The advantage to use the script is that
 it enables monitoring of the files inside the docker container along with memory leak checks without manually repeating the commands. Hit
 save and it would simply re run the compile and execution process for you.
 
