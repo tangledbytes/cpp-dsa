@@ -29,6 +29,20 @@ banner()
     echo -e "$(c gB)$@$(c)"
 }
 
+help()
+{
+    echo "Use: ./run.sh <flags> [file name to compiled and run]"
+    echo ""
+    echo "Supported flags:"
+    echo "-h, --help        See help"
+    echo "  , --no-mem      Disables valgrind"
+    echo "-o, --out-file    Set name of default compiled file name, default it a.out"
+    echo "-w, --watch       Set directories to be watched (Multiple are supported if given inside \"\")"
+    echo ""
+    echo "Example: ./run.sh -w=./lib/** --out-file=out main.cpp"
+    exit 0
+}
+
 # Parses the arguments passed
 check_argument()
 {
@@ -38,12 +52,14 @@ check_argument()
         case "$i" in
             --no-mem) no_mem=1
             ;;
-            -o=*) out_file=$VALUE
+            -o=*| --out-file=*) out_file=$VALUE
             ;;
             --watch=*| -w=*)
                 watch=$VALUE
             ;;
-            --*) error "Invalid flag!"; close 1
+            -h| --help) help
+            ;;
+            -*|--*) error "Invalid flag!"; close 1
             ;;
             *) in_file=$i
             ;;
