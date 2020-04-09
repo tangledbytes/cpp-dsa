@@ -40,7 +40,8 @@ check_argument()
             ;;
             -o=*) out_file=$VALUE
             ;;
-            --watch=*| -w=*) watch=$VALUE
+            --watch=*| -w=*)
+                watch=$VALUE
             ;;
             --*) log "Invalid flag!"; close 1
             ;;
@@ -118,10 +119,11 @@ if command -v inotifywait >/dev/null 2>&1; then
     echo ""
     
     log "Monitoring changes..."
+    log "Watching $watch for changes..."
     while inotifywait -q -r -e modify $watch >/dev/null 2>&1; do
         cpp_runner "$@"
         echo ""
-        log "Waiting for changes..."
+        log "Watching $watch for changes..."
     done
 else
     warn "inotify not found"
