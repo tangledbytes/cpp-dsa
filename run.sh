@@ -43,7 +43,7 @@ check_argument()
             --watch=*| -w=*)
                 watch=$VALUE
             ;;
-            --*) log "Invalid flag!"; close 1
+            --*) error "Invalid flag!"; close 1
             ;;
             *) in_file=$i
             ;;
@@ -58,7 +58,8 @@ close()
         log "EXITTING..."
         exit 0;
     else
-        log "EXITTED WITH CODE $1"
+        local msg="EXITTED WITH CODE $1"
+        if [ $1 -ne 0 ]; then error $msg; else log $msg; fi
         exit $1
     fi
 }
