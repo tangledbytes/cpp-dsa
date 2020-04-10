@@ -1,9 +1,8 @@
 #!/bin/bash
 
 # ===================================== FUNCTIONS ===========================================
-
-# Import coloring script
-. bash-colors.sh
+# Credit: https://github.com/ppo/bash-colors
+c() { echo "$1" | sed -E "s/(^|[^-_])([krgybmcw])/\1-\2/;s/(^$|0)/!0¡/;s/([BUFNL])/!\1¡/g;s/([-_])([krgybmcw])/!\1\2¡/g;y/BUFN-_krgybmcw/14573401234567/;s/L/22/;s/!/\\\033[/g;s/¡/m/g"; }
 
 # Logs the argument
 log ()
@@ -34,6 +33,7 @@ help()
     echo "Use: ./run.sh <flags> [file name to compiled and run]"
     echo ""
     echo "Supported flags:"
+    echo "-f,               Pass Makefile (Defaults to Makefile, if opted)"
     echo "-h, --help        See help"
     echo "  , --no-mem      Disables valgrind"
     echo "-o, --out-file    Set name of default compiled file name, default it a.out"
@@ -52,10 +52,11 @@ check_argument()
         case "$i" in
             --no-mem) no_mem=1
             ;;
+            -w=*| --watch=*) watch=$VALUE
+            ;;
             -o=*| --out-file=*) out_file=$VALUE
             ;;
-            --watch=*| -w=*)
-                watch=$VALUE
+            -f=*| -f) assign_makefile $VALUE
             ;;
             -h| --help) help
             ;;
@@ -65,6 +66,27 @@ check_argument()
             ;;
         esac
     done
+}
+
+# Assign makefile name
+assign_makefile()
+{
+    if [ "$1" = "" ]; then makefile="Makefile"
+    else makefile="$1"
+    fi
+    
+    if ! test -f $makefile; then
+        error "Couldn't find \"$makefile\""
+        warn "Looking for default \"Makefile\"..."
+        if test -f Makefile; then
+            makefile="Makefile"
+            log "Found \"$makefile\""
+            log "Proceeding with default \"$makefile\"..."
+        else
+            error "Couldn't find default \"Makefile\""
+            close 2;
+        fi
+    fi
 }
 
 # Closes with a certain exit code
@@ -83,20 +105,23 @@ close()
 # Runs the cpp code
 cpp_runner()
 {
-    # Setup
-    check_argument "$@"
-    
     # Log compile process
-    log "Compiling $in_file..."
+    log "Compiling..."
     
     # Compile the file
-    g++ -Wall -pedantic -std=c++17 -o "$out_file" $in_file
+    if [ "$makefile" != "" ]; then make -f "$makefile"
+    else
+        g++ -Wall -pedantic -std=c++17 -o "$out_file" $in_file
+    fi
     
     # Exit if above process didn't suceeded properly
-    if [ $? -ne 0 ]; then close 1; fi
+    if [ $? -ne 0 ]; then
+        error "Failed to compile"
+        return 1
+    fi
     
     # Log running process
-    log "Running $in_file..."
+    log "Running \"$out_file\"..."
     
     if [ $no_mem -eq 1 ]; then
         warn "Opted no memory leak checks"
@@ -124,6 +149,7 @@ in_file="main.cpp"
 
 # Default file/directory to watch
 watch=$in_file
+
 # ===================================================================================
 
 # Parse arguments
@@ -131,9 +157,9 @@ check_argument "$@"
 
 # Check if inotify exists on the system/container
 if command -v inotifywait >/dev/null 2>&1; then
-    echo ""
-    banner "=================== [CPP RUNNER] ========================"
-    echo ""
+    # echo ""
+    # banner "=================== [CPP RUNNER] ========================"
+    # echo ""
     
     log "Monitoring changes..."
     log "Watching $watch for changes..."
