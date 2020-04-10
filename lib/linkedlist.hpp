@@ -6,13 +6,13 @@ namespace utstl {
 
 template <class T>
 class LinkedList {
-  Node<T> *Head;
+  Node<T> Head;  // Kind of a sentinel
 
  public:
   int length;
 
  public:
-  LinkedList() : Head(nullptr), length(0) {}
+  LinkedList() : Head(), length(0) {}
   void insert(T data);
   T remove(T key);
   bool exists(T key);
@@ -20,9 +20,10 @@ class LinkedList {
   void forEach(void (*func)(T data));
 
   ~LinkedList() {
-    while (Head) {
-      Node<T> *temp = Head;
-      Head = Head->next;
+    Node<T> *localHead = Head.next;
+    while (localHead) {
+      Node<T> *temp = localHead;
+      localHead = localHead->next;
       delete temp;
       --length;
     }
@@ -34,7 +35,7 @@ class LinkedList {
  * */
 template <class T>
 void LinkedList<T>::forEach(void (*func)(T &data)) {
-  Node<T> *temp = Head;
+  Node<T> *temp = Head.next;
   while (temp) {
     func(temp->data);
     temp = temp->next;
@@ -46,7 +47,7 @@ void LinkedList<T>::forEach(void (*func)(T &data)) {
  * */
 template <class T>
 void LinkedList<T>::forEach(void (*func)(T data)) {
-  Node<T> *temp = Head;
+  Node<T> *temp = Head.next;
   while (temp) {
     func(temp->data);
     temp = temp->next;
@@ -58,15 +59,15 @@ void LinkedList<T>::insert(T data) {
   // Create a new node
   Node<T> *node = new Node<T>(data);
 
-  node->next = Head;
-  Head = node;
+  node->next = Head.next;
+  Head.next = node;
 
   ++length;
 }
 
 template <typename T>
 T LinkedList<T>::remove(T key) {
-  Node<T> *temp = Head, *tail = nullptr;
+  Node<T> *temp = Head.next, *tail = &Head;
   T data = T();
 
   while (temp && temp->data != key) {
@@ -75,9 +76,8 @@ T LinkedList<T>::remove(T key) {
   }
 
   if (temp) {
-    if (tail) tail->next = temp->next;
+    tail->next = temp->next;
     data = temp->data;
-    if (temp == Head) Head = temp->next;
     delete temp;
     --length;
   }
@@ -87,7 +87,7 @@ T LinkedList<T>::remove(T key) {
 
 template <typename T>
 bool LinkedList<T>::exists(T key) {
-  Node<T> *temp = Head;
+  Node<T> *temp = Head.next;
 
   while (temp && temp->data != key) {
     temp = temp->next;
