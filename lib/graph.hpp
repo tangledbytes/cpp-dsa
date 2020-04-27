@@ -8,12 +8,12 @@ class Graph
 private:
     int vertices;
 
-    utstl::LinkedList<int> *array;
+    LinkedList<int> *array;
 
 public:
     explicit Graph(int vertices) : vertices{vertices}
     {
-        array = new utstl::LinkedList<int>[vertices];
+        array = new LinkedList<int>[vertices];
     }
 
     void addEdge(int source, int destination)
@@ -32,6 +32,10 @@ public:
             std::cout << "NULL\n";
         }
     }
+
+    LinkedList<int> *getArray() { return array; }
+
+    int getVertices() { return vertices; }
 
     ~Graph()
     {

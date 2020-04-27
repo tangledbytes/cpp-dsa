@@ -1,22 +1,24 @@
 #pragma once
 
 #include "node.hpp"
+#include <functional>
 
-namespace utstl {
+namespace utstl
+{
 
 template <class T>
-class Queue {
+class Queue
+{
   Node<T> *front = nullptr, *rear = nullptr;
   int _size = 0;
 
- public:
+public:
   Queue();
   Queue(T[], int);
   void enqueue(T);
   T dequeue();
   T peek();
-  void forEach(void (*func)(T &data));
-  void forEach(void (*func)(T data));
+  void forEach(const std::function<void(T)> &);
   int size();
   bool isEmpty();
   void reverse();
@@ -34,8 +36,10 @@ Queue<T>::Queue() {}
  * queue
  * */
 template <typename T>
-Queue<T>::Queue(T arr[], int size) {
-  for (int i = 0; i < size; ++i) {
+Queue<T>::Queue(T arr[], int size)
+{
+  for (int i = 0; i < size; ++i)
+  {
     enqueue(arr[i]);
   }
 }
@@ -44,21 +48,11 @@ Queue<T>::Queue(T arr[], int size) {
  * Iterates over each element of the queue
  * */
 template <class T>
-void Queue<T>::forEach(void (*func)(T &data)) {
+void Queue<T>::forEach(const std::function<void(T)> &func)
+{
   Node<T> *temp = front;
-  while (temp) {
-    func(temp->data);
-    temp = temp->next;
-  }
-}
-
-/**
- * Iterates over each element of the queue
- * */
-template <class T>
-void Queue<T>::forEach(void (*func)(T data)) {
-  Node<T> *temp = front;
-  while (temp) {
+  while (temp)
+  {
     func(temp->data);
     temp = temp->next;
   }
@@ -68,10 +62,12 @@ void Queue<T>::forEach(void (*func)(T data)) {
  * Add element to the end of the queue
  * */
 template <typename T>
-void Queue<T>::enqueue(T data) {
+void Queue<T>::enqueue(T data)
+{
   Node<T> *node = new Node<T>(data);
 
-  if (isEmpty()) {
+  if (isEmpty())
+  {
     front = rear = node;
     ++_size;
     return;
@@ -86,17 +82,20 @@ void Queue<T>::enqueue(T data) {
  * Remove element from the start of the queue
  * */
 template <typename T>
-T Queue<T>::dequeue() {
+T Queue<T>::dequeue()
+{
   T data{};
 
-  if (!isEmpty()) {
+  if (!isEmpty())
+  {
     Node<T> *temp = front;
     data = front->data;
     front = front->next;
     --_size;
     delete temp;
 
-    if (isEmpty()) rear = nullptr;
+    if (isEmpty())
+      rear = nullptr;
   }
 
   return data;
@@ -106,10 +105,12 @@ T Queue<T>::dequeue() {
  * Get the front element without removing it from the queue
  * */
 template <typename T>
-T Queue<T>::peek() {
+T Queue<T>::peek()
+{
   T data{};
 
-  if (!isEmpty()) {
+  if (!isEmpty())
+  {
     T value = front->data;
     data = value;
   }
@@ -121,9 +122,11 @@ T Queue<T>::peek() {
  * Get the front element without removing it from the queue
  * */
 template <typename T>
-void Queue<T>::reverse() {
+void Queue<T>::reverse()
+{
   int size = _size;
-  while (size--) {
+  while (size--)
+  {
     enqueue(dequeue());
   }
 }
@@ -132,7 +135,8 @@ void Queue<T>::reverse() {
  * get size of the queue
  * */
 template <typename T>
-int Queue<T>::size() {
+int Queue<T>::size()
+{
   return _size;
 }
 
@@ -140,7 +144,8 @@ int Queue<T>::size() {
  * Return true if array is empty
  * */
 template <typename T>
-bool Queue<T>::isEmpty() {
+bool Queue<T>::isEmpty()
+{
   return !_size;
 }
 
@@ -148,11 +153,13 @@ bool Queue<T>::isEmpty() {
  * Releases all the allocated memeory for the queue
  * */
 template <typename T>
-Queue<T>::~Queue() {
-  while (front) {
+Queue<T>::~Queue()
+{
+  while (front)
+  {
     Node<T> *temp = front;
     front = front->next;
     delete temp;
   }
 }
-}
+} // namespace utstl
