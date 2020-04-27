@@ -7,19 +7,19 @@ c() { echo "$1" | sed -E "s/(^|[^-_])([krgybmcw])/\1-\2/;s/(^$|0)/!0¡/;s/([BUFN
 # Logs the argument
 log ()
 {
-    echo -e "$(c 0gB)[CPP RUNNER]:$(c) $(c 0gL)$@$(c)"
+    echo -e "$(c 0g)[CPP RUNNER]:$(c) $(c 0gL)$@$(c)"
 }
 
 # Log warning
 warn()
 {
-    echo -e "$(c 0yB)[CPP RUNNER]:$(c) $(c 0yL)$@$(c)"
+    echo -e "$(c 0y)[CPP RUNNER]:$(c) $(c 0yL)$@$(c)"
 }
 
 # Log error
 error()
 {
-    echo -e "$(c 0rB)[CPP RUNNER]:$(c) $(c 0rL)$@$(c)"
+    echo -e "$(c 0r)[CPP RUNNER]:$(c) $(c 0rL)$@$(c)"
 }
 
 # Banner
@@ -109,9 +109,10 @@ cpp_runner()
     log "Compiling..."
     
     # Compile the file
-    if [ "$makefile" != "" ]; then make -f "$makefile"
+    if [ "$makefile" != "" ]; then
+        make -f "$makefile"
     else
-        g++ -Wall -pedantic -std=c++17 -o "$out_file" $in_file
+        clang++ -Wall -std=c++17 -o "$out_file" $in_file
     fi
     
     # Exit if above process didn't suceeded properly
@@ -147,13 +148,13 @@ no_mem=0
 # Default file name
 in_file="main.cpp"
 
-# Default file/directory to watch
-watch=$in_file
-
 # ===================================================================================
 
 # Parse arguments
 check_argument "$@"
+
+# Default file/directory to watch
+watch=$in_file
 
 # Check if inotify exists on the system/container
 if command -v inotifywait >/dev/null 2>&1; then
@@ -162,6 +163,9 @@ if command -v inotifywait >/dev/null 2>&1; then
     # echo ""
     
     log "Monitoring changes..."
+    log "Watching $watch for changes..."
+    cpp_runner "$@"
+    echo ""
     log "Watching $watch for changes..."
     while inotifywait -q -r -e modify $watch >/dev/null 2>&1; do
         cpp_runner "$@"
