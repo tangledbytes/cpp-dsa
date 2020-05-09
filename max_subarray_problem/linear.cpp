@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <climits>
 
 int max(int a, int b)
 {
@@ -8,7 +9,7 @@ int max(int a, int b)
 
 int maxSubarraySum(int *arr, int size)
 {
-    int sum = 0, best = 0;
+    int sum = 0, best = INT_MIN;
     for (int i = 0; i < size; ++i)
     {
         sum = max(arr[i], sum + arr[i]);
