@@ -36,6 +36,9 @@ namespace
 		return res;
 	}
 
+	// partition function partitions an array into 3
+	// parts. It uses a slower variant of partition algorithm
+	// called Lomuto's partition
 	int partition(int *arr, int l, int r)
 	{
 		int pivot = arr[l];
@@ -52,6 +55,26 @@ namespace
 		utstl::utils::swap<int>(&arr[j], &arr[l]);
 
 		return j;
+	}
+
+	int hoare_partition(int *arr, int l, int r)
+	{
+		int pivot = arr[l];
+		int i = l - 1;
+		int j = r + 1;
+
+		while (true)
+		{
+			while (arr[++i] < pivot)
+				;
+			while (arr[--j] > pivot)
+				;
+
+			if (i >= j)
+				return j;
+
+			utstl::utils::swap<int>(&arr[i], &arr[j]);
+		}
 	}
 } // namespace
 
@@ -129,7 +152,7 @@ namespace utstl
 		{
 			if (l < r)
 			{
-				int pivot = partition(arr, l, r);
+				int pivot = hoare_partition(arr, l, r);
 				quick(arr, l, pivot - 1);
 				quick(arr, pivot + 1, r);
 			}
