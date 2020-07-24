@@ -57,7 +57,7 @@ namespace
 		return j;
 	}
 
-	int hoare_partition(int *arr, int l, int r)
+	int hoare_partition(int arr[], int l, int r)
 	{
 		int pivot = arr[l];
 		int i = l - 1;
@@ -153,7 +153,7 @@ namespace utstl
 			if (l < r)
 			{
 				int pivot = hoare_partition(arr, l, r);
-				quick(arr, l, pivot - 1);
+				quick(arr, l, pivot);
 				quick(arr, pivot + 1, r);
 			}
 		}
