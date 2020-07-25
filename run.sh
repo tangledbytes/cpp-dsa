@@ -150,11 +150,11 @@ in_file="main.cpp"
 
 # ===================================================================================
 
-# Parse arguments
-check_argument "$@"
-
 # Default file/directory to watch
 watch=$in_file
+
+# Parse arguments
+check_argument "$@"
 
 # Check if inotify exists on the system/container
 if command -v inotifywait >/dev/null 2>&1; then

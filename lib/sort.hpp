@@ -41,10 +41,10 @@ namespace
 	// called Lomuto's partition
 	int partition(int *arr, int l, int r)
 	{
-		int pivot = arr[l];
-		int j = l;
+		int pivot = arr[r];
+		int j = l - 1;
 
-		for (int i = l + 1; i <= r; ++i)
+		for (int i = l; i < r; ++i)
 		{
 			if (arr[i] <= pivot)
 			{
@@ -52,9 +52,9 @@ namespace
 			}
 		}
 
-		utstl::utils::swap<int>(&arr[j], &arr[l]);
+		utstl::utils::swap<int>(&arr[j + 1], &arr[r]);
 
-		return j;
+		return j + 1;
 	}
 
 	int hoare_partition(int arr[], int l, int r)

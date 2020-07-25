@@ -7,4 +7,4 @@ RUN apt install build-essential valgrind inotify-tools -y
 RUN apt install clang -y
 RUN apt autoremove
 
-COPY . .
+ENTRYPOINT [ "/bin/bash" ]
