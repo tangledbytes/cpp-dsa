@@ -2,92 +2,161 @@
 #include "heap.hpp"
 #include "utils/utils.hpp"
 
-namespace {
-int *merge_into_one(int *arr1, int *arr2, int size1, int size2) {
-  int *res = new int[size1 + size2];
-  int index1 = 0;
-  int index2 = 0;
-  int i = 0;
+namespace
+{
+	int *merge_into_one(int *arr1, int *arr2, int size1, int size2)
+	{
+		int *res = new int[size1 + size2];
+		int index1 = 0;
+		int index2 = 0;
+		int i = 0;
 
-  while (index1 < size1 && index2 < size2) {
-    if (arr1[index1] <= arr2[index2]) {
-      res[i++] = arr1[index1++];
-    } else {
-      res[i++] = arr2[index2++];
-    }
-  }
+		while (index1 < size1 && index2 < size2)
+		{
+			if (arr1[index1] <= arr2[index2])
+			{
+				res[i++] = arr1[index1++];
+			}
+			else
+			{
+				res[i++] = arr2[index2++];
+			}
+		}
 
-  while (index1 < size1) {
-    res[i++] = arr1[index1++];
-  }
+		while (index1 < size1)
+		{
+			res[i++] = arr1[index1++];
+		}
 
-  while (index2 < size2) {
-    res[i++] = arr2[index2++];
-  }
+		while (index2 < size2)
+		{
+			res[i++] = arr2[index2++];
+		}
 
-  return res;
-}
-}  // namespace
+		return res;
+	}
 
-namespace utstl {
+	// partition function partitions an array into 3
+	// parts. It uses a slower variant of partition algorithm
+	// called Lomuto's partition
+	int partition(int *arr, int l, int r)
+	{
+		int pivot = arr[l];
+		int j = l;
 
-namespace Sort {
+		for (int i = l + 1; i <= r; ++i)
+		{
+			if (arr[i] <= pivot)
+			{
+				utstl::utils::swap<int>(&arr[i], &arr[++j]);
+			}
+		}
 
-// Performs merge sort on the given array
-// Returns sorted array
-int *merge(int arr[], int start, int end) {
-  if (start == end) {
-    int *res = new int[1];
-    res[0] = arr[start];
-    return res;
-  }
+		utstl::utils::swap<int>(&arr[j], &arr[l]);
 
-  int mid = (start + end) / 2;
-  int *arr1 = merge(arr, start, mid);
-  int *arr2 = merge(arr, mid + 1, end);
+		return j;
+	}
 
-  int *res = merge_into_one(arr1, arr2, mid - start + 1, end - (mid + 1) + 1);
+	int hoare_partition(int arr[], int l, int r)
+	{
+		int pivot = arr[l];
+		int i = l - 1;
+		int j = r + 1;
 
-  // Delete the arrays
-  delete[] arr1;
-  delete[] arr2;
+		while (true)
+		{
+			while (arr[++i] < pivot)
+				;
+			while (arr[--j] > pivot)
+				;
 
-  return res;
-}
+			if (i >= j)
+				return j;
 
-// Performs insertion sort on the given array
-void insertion(int arr[], int size) {
-  for (int i = 0; i < size - 1; ++i) {
-    int j = i;
-    int key = i + 1;
-    while (j > -1 && arr[j] > arr[key]) {
-      utstl::utils::swap<int>(&arr[j--], &arr[key--]);
-    }
-  }
-}
+			utstl::utils::swap<int>(&arr[i], &arr[j]);
+		}
+	}
+} // namespace
 
-// Performs heap sort on the given array
-int *heap(int arr[], int size) {
-  MaxHeap heap(arr, size);
-  int *heapArr = new int[size];
-  int *tempArr = heap.get_heap();
+namespace utstl
+{
 
-  // Store the heap into the array
-  for (int i = 0; i < size; ++i) heapArr[i] = tempArr[i];
+	namespace Sort
+	{
 
-  for (int i = size - 1; i > 0; --i) {
-    // Exchange first and ith element
-    utils::swap<int>(&heapArr[0], &heapArr[i]);
+		// Performs merge sort on the given array
+		// Returns sorted array
+		int *merge(int arr[], int start, int end)
+		{
+			if (start == end)
+			{
+				int *res = new int[1];
+				res[0] = arr[start];
+				return res;
+			}
 
-    // Decrement heap size
-    size--;
+			int mid = (start + end) / 2;
+			int *arr1 = merge(arr, start, mid);
+			int *arr2 = merge(arr, mid + 1, end);
 
-    // Heapify the remaining array
-    Heap::max_heapify(heapArr, size, 0);
-  }
+			int *res = merge_into_one(arr1, arr2, mid - start + 1, end - (mid + 1) + 1);
 
-  return heapArr;
-}
+			// Delete the arrays
+			delete[] arr1;
+			delete[] arr2;
 
-}  // namespace Sort
-}  // namespace utstl
+			return res;
+		}
+
+		// Performs insertion sort on the given array
+		void insertion(int arr[], int size)
+		{
+			for (int i = 0; i < size - 1; ++i)
+			{
+				int j = i;
+				int key = i + 1;
+				while (j > -1 && arr[j] > arr[key])
+				{
+					utstl::utils::swap<int>(&arr[j--], &arr[key--]);
+				}
+			}
+		}
+
+		// Performs heap sort on the given array
+		int *heap(int arr[], int size)
+		{
+			MaxHeap heap(arr, size);
+			int *heapArr = new int[size];
+			int *tempArr = heap.get_heap();
+
+			// Store the heap into the array
+			for (int i = 0; i < size; ++i)
+				heapArr[i] = tempArr[i];
+
+			for (int i = size - 1; i > 0; --i)
+			{
+				// Exchange first and ith element
+				utils::swap<int>(&heapArr[0], &heapArr[i]);
+
+				// Decrement heap size
+				size--;
+
+				// Heapify the remaining array
+				Heap::max_heapify(heapArr, size, 0);
+			}
+
+			return heapArr;
+		}
+
+		void quick(int *arr, int l, int r)
+		{
+			if (l < r)
+			{
+				int pivot = hoare_partition(arr, l, r);
+				quick(arr, l, pivot);
+				quick(arr, pivot + 1, r);
+			}
+		}
+
+	} // namespace Sort
+} // namespace utstl
