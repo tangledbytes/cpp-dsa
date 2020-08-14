@@ -39,7 +39,7 @@ namespace
 	// partition function partitions an array into 3
 	// parts. It uses a slower variant of partition algorithm
 	// called Lomuto's partition
-	int partition(int *arr, int l, int r)
+	int lomuto_partition(int *arr, int l, int r)
 	{
 		int pivot = arr[r];
 		int j = l - 1;
@@ -52,11 +52,13 @@ namespace
 			}
 		}
 
-		utstl::utils::swap<int>(&arr[j + 1], &arr[r]);
+		utstl::utils::swap<int>(&arr[++j], &arr[r]);
 
-		return j + 1;
+		return j;
 	}
 
+	// hoare_partition function uses the original hoare's
+	// partition algorithm to partition the arrays
 	int hoare_partition(int arr[], int l, int r)
 	{
 		int pivot = arr[l];
@@ -75,6 +77,14 @@ namespace
 
 			utstl::utils::swap<int>(&arr[i], &arr[j]);
 		}
+	}
+
+	// medianOf3 returns the index of median of the three
+	// value corresponding to the indices in the array
+	int medianOf3(int arr[], int i1, int i2, int i3)
+	{
+		return (
+			(arr[i1] > arr[i2]) ? (arr[i2] > arr[i3]) ? i2 : (arr[i1] > arr[i3]) ? i3 : i1 : (arr[i3] < arr[i1]) ? i1 : (arr[i3] > arr[i2]) ? i2 : i3);
 	}
 } // namespace
 
@@ -148,14 +158,104 @@ namespace utstl
 			return heapArr;
 		}
 
-		void quick(int *arr, int l, int r)
+		void lomuto_quick(int arr[], int l, int r)
+		{
+			if (l >= r)
+				return;
+
+			int pivot = lomuto_partition(arr, l, r);
+			lomuto_quick(arr, l, pivot - 1);
+			lomuto_quick(arr, pivot + 1, r);
+		}
+
+		void hoare_quick(int arr[], int l, int r)
 		{
 			if (l < r)
 			{
 				int pivot = hoare_partition(arr, l, r);
-				quick(arr, l, pivot);
-				quick(arr, pivot + 1, r);
+				hoare_quick(arr, l, pivot);
+				hoare_quick(arr, pivot + 1, r);
 			}
+		}
+
+		// quick function usses optimised bentley-mcilroy
+		// quicksort algorithm to sort the provided array
+		// in place. These optimisations were suggested by Robert
+		// Sedgewick in his paper "Analysis of Quick Sort" in 1976
+		void quick(int arr[], int l, int r)
+		{
+			constexpr int INSERTION_SORT_THRESHOLD = 8;
+			constexpr int MEDIAN_OF_3_THRESHOLD = 40;
+
+			int size = r - l + 1;
+
+			// Perfrom insertion sort if the size is below the
+			// insertion sort threshold
+			if (size <= INSERTION_SORT_THRESHOLD)
+			{
+				return insertion(arr, size);
+			}
+
+			// Median of 3 has better constant than the randomised
+			// quicksort approach. The time complexities of the two are as
+			// follows:
+			// Randomised Quicksort ~ 1.386nlogn
+			// Median of 3 Quicksort ~ 1.188nlogn
+			if (size <= MEDIAN_OF_3_THRESHOLD)
+			{
+				int med = medianOf3(arr, l, l + size / 2, r);
+
+				// Swap the median with the median
+				utils::swap<int>(arr[med], arr[l]);
+			}
+			else
+			{
+				// If the array size is too big then use the ninther
+				int eps = size / 8;
+				int mid = l + size / 2;
+				int m1 = medianOf3(arr, l, l + eps, l + eps + eps);
+				int m2 = medianOf3(arr, mid - eps, mid, mid + eps);
+				int m3 = medianOf3(arr, r - eps - eps, r - eps, r);
+
+				int ninther = medianOf3(arr, m1, m2, m3);
+				utils::swap<int>(arr[ninther], arr[l]);
+			}
+
+			// Bentley-McIlroy Procedure
+			int i = l, j = r + 1;
+			int p = l, q = r + 1;
+
+			int pivot = arr[l];
+			while (true)
+			{
+				while (arr[++i] < pivot)
+					if (i == r)
+						break;
+
+				while (arr[--j] > pivot)
+					if (j == l)
+						break;
+
+				if (i == j && (arr[i] == pivot))
+					utils::swap<int>(arr[++p], arr[i]);
+				if (i >= j)
+					break;
+
+				utils::swap<int>(arr[i], arr[j]);
+				if (arr[i] == pivot)
+					utils::swap<int>(arr[++p], arr[i]);
+				if (arr[j] == pivot)
+					utils::swap<int>(arr[--q], arr[j]);
+			}
+
+			i = j + 1;
+			for (int k = l; k <= p; ++k)
+				utils::swap<int>(arr[k], arr[j--]);
+			for (int k = r; k >= q; --k)
+				utils::swap<int>(arr[k], arr[i++]);
+
+			quick(arr, l, j);
+			quick(arr, i, r);
 		}
 
 	} // namespace Sort

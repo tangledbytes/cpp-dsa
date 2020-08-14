@@ -4,3 +4,4 @@ out
 **/*.out
 **/*.o
 clg
+vgcore*

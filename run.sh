@@ -130,12 +130,19 @@ cpp_runner()
     else
         # Check if valgrind exists
         if command -v valgrind >/dev/null 2>&1; then
-            valgrind --leak-check=full ./$out_file
+            valgrind --leak-check=full --track-origins=yes ./$out_file
         else
             warn "Failed to find valgrind... skipping memory checks"
             ./$out_file
         fi
     fi
+}
+
+cleanup()
+{
+	log "Cleaning up files"
+	rm vgcore.* $out_file
+	log "Removed generated files"
 }
 
 # =============================== GLOBAL VARIABLES ==================================
@@ -166,10 +173,12 @@ if command -v inotifywait >/dev/null 2>&1; then
     log "Watching $watch for changes..."
     cpp_runner "$@"
     echo ""
+	cleanup
     log "Watching $watch for changes..."
     while inotifywait -q -r -e modify $watch >/dev/null 2>&1; do
         cpp_runner "$@"
         echo ""
+		cleanup
         log "Watching $watch for changes..."
     done
 else
