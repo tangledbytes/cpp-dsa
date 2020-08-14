@@ -23,15 +23,16 @@ fi
 # if the container already exists then just start the container
 # if not then create the container and then start it
 if [ ! "$(docker ps -aq -f name=$tag)" ]; then
-	printf "Creating a new container..."
+	printf "Creating a new container... "
 	docker create -it -v $(pwd):/app --name "$tag" "$tag"
 fi
 
-printf "Starting the container..."
+printf "Starting the container... "
 docker start "$tag"
 
 # Enter the container with custom command
 docker exec -it "$tag" ./$run_script "$@"
 
 # Stop the container after using it
+printf "Stopping... "
 docker stop "$tag"
