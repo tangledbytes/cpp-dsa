@@ -23,7 +23,6 @@ namespace utstl
 	class Tree
 	{
 		TreeNode<T> *root;
-		int nodeCount;
 
 	public:
 		enum class Traversal
@@ -170,6 +169,38 @@ namespace utstl
 					break;
 				}
 			}
+
+			return *this;
+		}
+
+		Tree<T> &remove(T data)
+		{
+			// node will store the node which is supposed to be
+			// deleted. While lastNode will store the last node
+			// of the tree.
+			TreeNode<T> *node = nullptr, *lastNode = nullptr;
+			levelorder_traversal(root, [&node, &lastNode, data](TreeNode<T> *currNode) {
+				if (currNode->data == data)
+					node = currNode;
+				lastNode = currNode;
+			});
+
+			if (node && lastNode)
+			{
+				levelorder_traversal(root, [lastNode](TreeNode<T> *node) {
+					if (node->lchild == lastNode)
+						node->lchild = nullptr;
+					else if (node->rchild == lastNode)
+						node->rchild = nullptr;
+				});
+
+				node->data = lastNode->data;
+				delete lastNode;
+			}
+
+			// If the deleted node is the root node
+			if (root == lastNode)
+				root = nullptr;
 
 			return *this;
 		}
