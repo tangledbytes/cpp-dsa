@@ -141,7 +141,7 @@ cpp_runner()
 cleanup()
 {
 	log "Cleaning up files"
-	rm vgcore.* $out_file
+	rm vgcore.* $out_file >/dev/null 2>&1
 	log "Removed generated files"
 }
 
