@@ -3,24 +3,13 @@
 #include <iostream>
 #include <functional>
 
+#include "binary_tree_node.hpp"
 #include "queue.hpp"
 
 namespace utstl
 {
-	template <typename T>
-	struct TreeNode
-	{
-		T data;
-		TreeNode<T> *lchild;
-		TreeNode<T> *rchild;
-
-		TreeNode() : data(), lchild(nullptr), rchild(nullptr) {}
-		explicit TreeNode(T d) : data(d), lchild(nullptr), rchild(nullptr) {}
-		explicit TreeNode(T d, TreeNode<T> *lc, TreeNode<T> *rc) : data(d), lchild(nullptr), rchild(nullptr) {}
-	};
-
 	template <typename T = int>
-	class Tree
+	class BinaryTree
 	{
 		TreeNode<T> *root;
 
@@ -113,10 +102,16 @@ namespace utstl
 		}
 
 	public:
-		explicit Tree() : root(nullptr) {}
+		explicit BinaryTree() : root(nullptr) {}
+		BinaryTree(const BinaryTree<T> &other) : root(nullptr)
+		{
+			levelorder_traversal(other.root, [this](T data) {
+				this->insert(data);
+			});
+		}
 
 		template <Traversal tr = Traversal::INORDER>
-		Tree<T> &traverse(const std::function<void(T)> &func)
+		BinaryTree<T> &traverse(const std::function<void(T)> &func)
 		{
 			if (tr == Traversal::INORDER)
 				inorder_traversal(root, func);
@@ -133,7 +128,7 @@ namespace utstl
 			return *this;
 		}
 
-		Tree<T> &insert(T data)
+		BinaryTree<T> &insert(T data)
 		{
 			// If tree hasn't been created yet then create the root node
 			if (!root)
@@ -173,7 +168,7 @@ namespace utstl
 			return *this;
 		}
 
-		Tree<T> &remove(T data)
+		BinaryTree<T> &remove(T data)
 		{
 			// node will store the node which is supposed to be
 			// deleted. While lastNode will store the last node
@@ -205,7 +200,7 @@ namespace utstl
 			return *this;
 		}
 
-		~Tree()
+		~BinaryTree()
 		{
 			levelorder_traversal(root, [](TreeNode<T> *node) { delete node; });
 		}
