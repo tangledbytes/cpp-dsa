@@ -11,6 +11,7 @@ namespace utstl
 	template <typename T = int>
 	class BinaryTree
 	{
+	protected:
 		TreeNode<T> *root;
 
 	public:
@@ -22,7 +23,7 @@ namespace utstl
 			LEVELORDER
 		};
 
-	private:
+	protected:
 		void inorder_traversal(TreeNode<T> *node, const std::function<void(T)> &func)
 		{
 			if (node)
@@ -116,19 +117,19 @@ namespace utstl
 			if (tr == Traversal::INORDER)
 				inorder_traversal(root, func);
 
-			if (tr == Traversal::POSTORDER)
+			else if (tr == Traversal::POSTORDER)
 				postorder_traversal(root, func);
 
-			if (tr == Traversal::PREORDER)
+			else if (tr == Traversal::PREORDER)
 				preorder_traversal(root, func);
 
-			if (tr == Traversal::LEVELORDER)
+			else if (tr == Traversal::LEVELORDER)
 				preorder_traversal(root, func);
 
 			return *this;
 		}
 
-		BinaryTree<T> &insert(T data)
+		virtual BinaryTree<T> &insert(T data)
 		{
 			// If tree hasn't been created yet then create the root node
 			if (!root)
@@ -168,7 +169,7 @@ namespace utstl
 			return *this;
 		}
 
-		BinaryTree<T> &remove(T data)
+		virtual BinaryTree<T> &remove(T data)
 		{
 			// node will store the node which is supposed to be
 			// deleted. While lastNode will store the last node
@@ -198,6 +199,11 @@ namespace utstl
 				root = nullptr;
 
 			return *this;
+		}
+
+		TreeNode<T> *Root() const
+		{
+			return this->root;
 		}
 
 		~BinaryTree()
