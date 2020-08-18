@@ -12,6 +12,8 @@ namespace utstl
 	public:
 		BST() : BinaryTree<T>() {}
 
+		// insert adds a new node to the binary search tree
+		// and returns a reference to the current object
 		BST<T> &insert(T data) override
 		{
 			if (!BinaryTree<T>::root)
@@ -55,9 +57,12 @@ namespace utstl
 			return *this;
 		}
 
-		TreeNode<T> *search(T data)
+		// search searches a node with the provided key and returns
+		// a pointer to that node if it exists. If it doesn't exists then
+		// it returns a nullptr.
+		TreeNode<T> *search(T data) const
 		{
-			TreeNode<T> *node = BinaryTree<T>::root;
+			auto node = BinaryTree<T>::root;
 
 			while (node && node->data == data)
 			{
@@ -68,6 +73,75 @@ namespace utstl
 			}
 
 			return node;
+		}
+
+		// min returns the node with minimum value as it's data
+		// it starts it's search from the node passed in the parameter
+		TreeNode<T> *min(TreeNode<T> *node) const
+		{
+			while (node->lchild)
+			{
+				node = node->lchild;
+			}
+
+			return node;
+		}
+
+		// min returns the minimum element of the current BST
+		TreeNode<T> *min() const
+		{
+			return min(BinaryTree<T>::root);
+		}
+
+		// max returns the maximum element for the subtree
+		// whose root node is passed as an argumen
+		TreeNode<T> *max(TreeNode<T> *node) const
+		{
+			while (node->rchild)
+			{
+				node = node->rchild;
+			}
+
+			return node;
+		}
+
+		// max returns the maximum element of the current BST
+		TreeNode<T> *max() const
+		{
+			return max(BinaryTree<T>::root);
+		}
+
+		// successor returns inorder successor for the passed node
+		TreeNode<T> *successor(TreeNode<T> *node) const
+		{
+			if (node && node->rchild)
+				return min(node->rchild);
+
+			return nullptr;
+		}
+
+		// successor returns inorder successor of the root node
+		// of the current BST
+		TreeNode<T> *successor() const
+		{
+			return successor(BinaryTree<T>::root);
+		}
+
+		// predecessor returns the predecessor for the provided node considering
+		// it as the root node of the tree. Hence it will not go to it's parent
+		// node to find it's predecessor in case the right left tree of the node is nil.
+		TreeNode<T> *predecessor(TreeNode<T> *node) const
+		{
+			if (node && node->lchild)
+				return max(node->lchild);
+
+			return nullptr;
+		}
+
+		// predecessor returns the predecessor of the root node of the current BST
+		TreeNode<T> *predecessor() const
+		{
+			return predecessor(BinaryTree<T>::root);
 		}
 
 		BST<T> &remove(T data) override
