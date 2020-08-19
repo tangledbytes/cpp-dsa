@@ -9,6 +9,40 @@ namespace utstl
 	template <typename T = int>
 	class BST : public BinaryTree<T>
 	{
+	private:
+		TreeNode<T> *remove(TreeNode<T> *root, T data)
+		{
+			if (!root)
+				return root;
+
+			if (root->data > data)
+				root->lchild = remove(root->lchild, data);
+			else if (root->data < data)
+				root->rchild = remove(root->rchild, data);
+			else
+			{
+				if (!root->lchild)
+				{
+					TreeNode<T> *temp = root->rchild;
+					delete root;
+					return temp;
+				}
+				else if (!root->rchild)
+				{
+					TreeNode<T> *temp = root->lchild;
+					delete root;
+					return temp;
+				}
+				else
+				{
+					TreeNode<T> *s = successor(root);
+					root->data = s->data;
+					root->rchild = remove(root->rchild, s->data);
+				}
+			}
+			return root;
+		}
+
 	public:
 		BST() : BinaryTree<T>() {}
 
@@ -75,11 +109,11 @@ namespace utstl
 			return node;
 		}
 
-		// min returns the node with minimum value as it's data
-		// it starts it's search from the node passed in the parameter
+		// min returns the node with minimum value as its data
+		// it starts its search from the node passed in the parameter
 		TreeNode<T> *min(TreeNode<T> *node) const
 		{
-			while (node->lchild)
+			while (node && node->lchild)
 			{
 				node = node->lchild;
 			}
@@ -146,6 +180,7 @@ namespace utstl
 
 		BST<T> &remove(T data) override
 		{
+			BinaryTree<T>::root = remove(BinaryTree<T>::root, data);
 			return *this;
 		}
 	};
