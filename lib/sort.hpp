@@ -135,7 +135,7 @@ namespace utstl
 		// Performs heap sort on the given array
 		int *heap(int arr[], int size)
 		{
-			MaxHeap heap(arr, size);
+			Heap<int, Heap_Type::MIN> heap(arr, size, size);
 			int *heapArr = new int[size];
 			int *tempArr = heap.get_heap();
 
@@ -146,13 +146,13 @@ namespace utstl
 			for (int i = size - 1; i > 0; --i)
 			{
 				// Exchange first and ith element
-				utils::swap<int>(&heapArr[0], &heapArr[i]);
+				utils::swap<int>(heapArr[0], heapArr[i]);
 
 				// Decrement heap size
 				size--;
 
 				// Heapify the remaining array
-				Heap::max_heapify(heapArr, size, 0);
+				Heap<int, Heap_Type::MIN>::heapify(heapArr, size, 0);
 			}
 
 			return heapArr;

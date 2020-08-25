@@ -10,3 +10,4 @@
 #include "stack.hpp"
 #include "graph.hpp"
 #include "binary_tree.hpp"
+#include "bst.hpp"
