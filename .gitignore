@@ -5,3 +5,4 @@ out
 **/*.o
 clg
 vgcore*
+__*.cpp
