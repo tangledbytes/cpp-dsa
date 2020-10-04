@@ -53,7 +53,7 @@ private:
     return false;
   }
 
-  bool remove(TrieNode *node, std::string key, int level) {
+  bool remove(TrieNode *node, const std::string &key, int level) {
     if (!root)
       return false;
 
@@ -143,6 +143,8 @@ public:
   }
 
   void remove(std::string key) { remove(root, key, 0); }
+
+  TrieNode *getRoot() const { return root; }
 
   ~Trie() { cleanup(root); }
 };
